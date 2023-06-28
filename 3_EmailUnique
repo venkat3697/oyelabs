@@ -1,0 +1,66 @@
+const mysql = require('mysql');
+
+const customers = [
+  {
+    email: "anurag11@yopmail.com",
+    name: "anurag"
+  },
+  {
+    email: "sameer11@yopmail.com",
+    name: "sameer"
+  },
+  {
+    email: "ravi11@yopmail.com",
+    name: "ravi"
+  },
+  {
+    email: "akash11@yopmail.com",
+    name: "akash"
+  },
+  {
+    email: "anjali11@yopmail.com",
+    name: "anjai"
+  },
+  {
+    email: "santosh11@yopmail.com",
+    name: "santosh"
+  }
+];
+
+const connection = mysql.createConnection({
+  host: 'our_host',
+  user: 'our_user',
+  password: 'our_password',
+  database: 'our_database'
+});
+
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
+  }
+  console.log('Connected to MySQL database');
+  
+  customers.forEach((customer) => {
+    const { email, name } = customer;
+    const query = `INSERT INTO customers (email, name) VALUES (?, ?) ON DUPLICATE KEY UPDATE name = ?`;
+    const values = [email, name, name];
+    
+    connection.query(query, values, (err, result) => {
+      if (err) {
+        console.error('Error executing SQL query:', err);
+        return;
+      }
+      
+      console.log(`Customer with email '${email}' inserted/updated successfully`);
+    });
+  });
+  
+  connection.end((err) => {
+    if (err) {
+      console.error('Error disconnecting from MySQL:', err);
+      return;
+    }
+    console.log('Disconnected from MySQL database');
+  });
+});
